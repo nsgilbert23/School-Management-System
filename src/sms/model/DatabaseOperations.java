@@ -9,6 +9,6 @@ public interface DatabaseOperations {
     void update();
 
     void delete();
-
-    List<Student> search(String keyword);
+    
+    void search(String keyword);
 }

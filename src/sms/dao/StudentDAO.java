@@ -8,25 +8,14 @@ import javax.swing.JOptionPane;
 
 public class StudentDAO {
 
-    // JDBC connection parameters
-    private static final String URL = "jdbc:mysql://localhost:3306/sms"; // replace with your DB
-    private static final String USER = "root"; // replace with your DB user
-    private static final String PASS = "";     // replace with your DB password
-
-    // ==========================
-    // GET CONNECTION
-    // ==========================
-    private static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASS);
-    }
-
     // ==========================
     // ADD STUDENT
     // ==========================
     public static void addStudent(Student s) {
+
         String sql = "INSERT INTO students (firstName, lastName, email, course, marks) VALUES (?, ?, ?, ?, ?)";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pst = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             pst.setString(1, s.getFirstName());
@@ -38,15 +27,13 @@ public class StudentDAO {
             int affectedRows = pst.executeUpdate();
 
             if (affectedRows > 0) {
-                try (ResultSet rs = pst.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        s.setId(rs.getInt(1)); // set generated ID
-                    }
+                ResultSet rs = pst.getGeneratedKeys();
+                if (rs.next()) {
+                    s.setId(rs.getInt(1));
                 }
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error adding student: " + e.getMessage());
         }
     }
@@ -55,9 +42,10 @@ public class StudentDAO {
     // UPDATE STUDENT
     // ==========================
     public static void updateStudent(Student s) {
+
         String sql = "UPDATE students SET firstName=?, lastName=?, email=?, course=?, marks=? WHERE id=?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pst = conn.prepareStatement(sql)) {
 
             pst.setString(1, s.getFirstName());
@@ -70,7 +58,6 @@ public class StudentDAO {
             pst.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error updating student: " + e.getMessage());
         }
     }
@@ -79,16 +66,16 @@ public class StudentDAO {
     // DELETE STUDENT
     // ==========================
     public static void deleteStudent(int id) {
+
         String sql = "DELETE FROM students WHERE id=?";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pst = conn.prepareStatement(sql)) {
 
             pst.setInt(1, id);
             pst.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error deleting student: " + e.getMessage());
         }
     }
@@ -97,27 +84,30 @@ public class StudentDAO {
     // GET ALL STUDENTS
     // ==========================
     public static List<Student> getAllStudents() {
+
         List<Student> students = new ArrayList<>();
+
         String sql = "SELECT * FROM students";
 
-        try (Connection conn = getConnection();
+        try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
+
                 Student s = new Student(
-                    rs.getInt("id"),
-                    rs.getString("firstName"),
-                    rs.getString("lastName"),
-                    rs.getString("email"),
-                    rs.getString("course"),
-                    rs.getDouble("marks")
+                        rs.getInt("id"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("course"),
+                        rs.getDouble("marks")
                 );
+
                 students.add(s);
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error fetching students: " + e.getMessage());
         }
 
@@ -125,35 +115,40 @@ public class StudentDAO {
     }
 
     // ==========================
-    // SEARCH STUDENTS BY NAME
+    // SEARCH STUDENTS
     // ==========================
     public static List<Student> searchStudents(String keyword) {
-        List<Student> students = new ArrayList<>();
-        String sql = "SELECT * FROM students WHERE firstName LIKE ? OR lastName LIKE ?";
 
-        try (Connection conn = getConnection();
+        List<Student> students = new ArrayList<>();
+
+        String sql = "SELECT * FROM students WHERE firstName LIKE ? OR lastName LIKE ? OR email LIKE ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pst = conn.prepareStatement(sql)) {
 
             String kw = "%" + keyword + "%";
+
             pst.setString(1, kw);
             pst.setString(2, kw);
+            pst.setString(3, kw);
 
-            try (ResultSet rs = pst.executeQuery()) {
-                while (rs.next()) {
-                    Student s = new Student(
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+
+                Student s = new Student(
                         rs.getInt("id"),
                         rs.getString("firstName"),
                         rs.getString("lastName"),
                         rs.getString("email"),
                         rs.getString("course"),
                         rs.getDouble("marks")
-                    );
-                    students.add(s);
-                }
+                );
+
+                students.add(s);
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error searching students: " + e.getMessage());
         }
 

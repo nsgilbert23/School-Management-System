@@ -34,7 +34,6 @@ public class MainFrameDesign extends javax.swing.JFrame {
         addTableListener();
 
         refreshTable(StudentDAO.getAllStudents());
-        getContentPane().setLayout(new BorderLayout());
         
         
 
@@ -151,15 +150,15 @@ jTable1.getTableHeader().setReorderingAllowed(false);
     // ==========================
     private void searchStudent() {
 
-        String keyword = jTextField1.getText().trim();
+    String keyword = jTextField4.getText().trim();
 
-        if (keyword.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Enter name to search");
-            return;
-        }
-
-        refreshTable(StudentDAO.searchStudents(keyword));
+    if (keyword.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Enter email to search");
+        return;
     }
+
+    refreshTable(StudentDAO.searchStudents(keyword));
+}
 
     // ==========================
     // SHOW ALL
@@ -189,7 +188,7 @@ jTable1.getTableHeader().setReorderingAllowed(false);
     }
 
     // ==========================
-    // REFRESH TABLE
+    // TABLE
     // ==========================
     private void refreshTable(List<Student> students) {
 
@@ -198,36 +197,49 @@ jTable1.getTableHeader().setReorderingAllowed(false);
     for (Student s : students) {
 
         Object[] row = {
-            s.getId(),
-            s.getFirstName(),
-            s.getLastName(),
-            s.getEmail(),
-            s.getCourse(),
-            s.getMarks()
-        };
+        s.getId(),
+        s.getFirstName(),
+        s.getLastName(),
+        s.getEmail(),
+        s.getCourse(),
+        s.getMarks()
+};
 
         tableModel.addRow(row);
     }
 }
 
     // ==========================
-    // VALIDATION
-    // ==========================
-    private boolean validateInputs() {
+// VALIDATION
+// ==========================
+private boolean validateInputs() {
 
-        if (jTextField1.getText().trim().isEmpty()) return false;
-        if (jTextField3.getText().trim().isEmpty()) return false;
-        if (jTextField4.getText().trim().isEmpty()) return false;
-        if (jTextField6.getText().trim().isEmpty()) return false;
+    String firstName = jTextField1.getText().trim();
+    String lastName  = jTextField3.getText().trim();
+    String email     = jTextField4.getText().trim();
+    String marksStr  = jTextField6.getText().trim();
 
-        try {
-            Double.parseDouble(jTextField6.getText());
-        } catch (Exception e) {
-            return false;
-        }
-
-        return true;
+    // Check empty fields
+    if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || marksStr.isEmpty()) {
+        return false;
     }
+
+    // Email format validation
+    if (!email.contains("@") || !email.contains(".")) {
+        JOptionPane.showMessageDialog(this, "Invalid email format. Email must contain '@' and '.'");
+        return false;
+    }
+
+    // Marks validation
+    try {
+        Double.parseDouble(marksStr);
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Marks must be a valid number");
+        return false;
+    }
+
+    return true;
+}
 
     // ==========================
     // GET STUDENT OBJECT
@@ -303,16 +315,17 @@ jTable1.getTableHeader().setReorderingAllowed(false);
                 return;
             }
 
-            Object firstName = tableModel.getValueAt(row, 1);
-            Object lastName  = tableModel.getValueAt(row, 2);
-            Object email     = tableModel.getValueAt(row, 3);
-            Object course    = tableModel.getValueAt(row, 4);
-            Object marks     = tableModel.getValueAt(row, 5);
+            String firstName = tableModel.getValueAt(row, 1).toString();
+            String lastName  = tableModel.getValueAt(row, 2).toString();
+            String email     = tableModel.getValueAt(row, 3).toString();
+            String course    = tableModel.getValueAt(row, 4).toString();
+            String marks     = tableModel.getValueAt(row, 5).toString();
 
-            jTextField1.setText(firstName == null ? "" : firstName.toString());
-            jTextField3.setText(lastName == null ? "" : lastName.toString());
-            jTextField4.setText(email == null ? "" : email.toString());
-
+            jTextField1.setText(firstName);
+            jTextField3.setText(lastName);
+            jTextField4.setText(email);
+            jComboBox1.setSelectedItem(course);
+            jTextField6.setText(marks);
             if (course != null) {
                 jComboBox1.setSelectedItem(course.toString());
             }
@@ -330,46 +343,46 @@ jTable1.getTableHeader().setReorderingAllowed(false);
     // ==========================
     private void applyFiltersAndSort() {
 
-        List<Student> students = StudentDAO.getAllStudents();
-        List<Student> filtered = new ArrayList<>();
+    List<Student> students = StudentDAO.getAllStudents();
+    List<Student> filtered = new ArrayList<>();
 
-        int minMarks = sliderMarks.getValue();
+    int minMarks = sliderMarks.getValue();
 
-        for (Student s : students) {
+    for (Student s : students) {
 
-            if (s.getMarks() < minMarks) continue;
+        if (s.getMarks() < minMarks) continue;
 
-            boolean courseMatch = true;
+        boolean courseMatch = true;
 
-            if (chkMathOnly.isSelected())
-                courseMatch &= s.getCourse().equalsIgnoreCase("Mathematics");
+        if (chkMathOnly.isSelected())
+            courseMatch &= s.getCourse().equalsIgnoreCase("Mathematics");
 
-            if (jCheckBox1.isSelected())
-                courseMatch &= s.getCourse().equalsIgnoreCase("Operating System");
+        if (jCheckBox1.isSelected())
+            courseMatch &= s.getCourse().equalsIgnoreCase("Operating System");
 
-            if (jCheckBox2.isSelected())
-                courseMatch &= s.getCourse().equalsIgnoreCase("Networking");
+        if (jCheckBox2.isSelected())
+            courseMatch &= s.getCourse().equalsIgnoreCase("Networking");
 
-            if (jCheckBox3.isSelected())
-                courseMatch &= s.getCourse().equalsIgnoreCase("Java OOP");
+        if (jCheckBox3.isSelected())
+            courseMatch &= s.getCourse().equalsIgnoreCase("Java OOP");
 
-            if (courseMatch)
-                filtered.add(s);
-        }
-
-        if (rbSortName.isSelected()) {
-
-            filtered.sort((a, b) ->
-                    a.getFirstName().compareToIgnoreCase(b.getFirstName()));
-
-        } else if (rbSortMarks.isSelected()) {
-
-            filtered.sort((a, b) ->
-                    Double.compare(b.getMarks(), a.getMarks()));
-        }
-
-        refreshTable(filtered);
+        if (courseMatch)
+            filtered.add(s);
     }
+
+    if (rbSortName.isSelected()) {
+
+        filtered.sort((a, b) ->
+                a.getFirstName().compareToIgnoreCase(b.getFirstName()));
+
+    } else if (rbSortMarks.isSelected()) {
+
+        filtered.sort((a, b) ->
+                Double.compare(b.getMarks(), a.getMarks()));
+    }
+
+    refreshTable(filtered);
+}
 
     // ==========================
     // ABOUT
@@ -544,19 +557,20 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {
         txtEmail.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         txtEmail.setText("Email");
 
+        btnSearch.setBackground(new java.awt.Color(108, 117, 125));
         btnSearch.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
         btnSearch.setText("Search");
         btnSearch.addActionListener(this::btnSearchActionPerformed);
 
-        btnUpdate.setBackground(new java.awt.Color(0, 0, 255));
+        btnUpdate.setBackground(new java.awt.Color(0, 123, 255));
         btnUpdate.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
         btnUpdate.setText("Update");
 
-        btnDelete.setBackground(new java.awt.Color(255, 0, 0));
+        btnDelete.setBackground(new java.awt.Color(220, 53, 69));
         btnDelete.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
         btnDelete.setText("Delete");
 
-        btnAdd.setBackground(new java.awt.Color(0, 255, 0));
+        btnAdd.setBackground(new java.awt.Color(40, 167, 69));
         btnAdd.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
         btnAdd.setText("Add");
 
@@ -575,10 +589,12 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Mathematics", "Networking", "Java OOP", "Operating System" }));
         jComboBox1.addActionListener(this::jComboBox1ActionPerformed);
 
+        btnShowAll.setBackground(new java.awt.Color(23, 162, 184));
         btnShowAll.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
         btnShowAll.setText("Show All");
         btnShowAll.addActionListener(this::btnShowAllActionPerformed);
 
+        btnStringOps.setBackground(new java.awt.Color(111, 66, 193));
         btnStringOps.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
         btnStringOps.setText("String Ops");
         btnStringOps.addActionListener(this::btnStringOpsActionPerformed);
