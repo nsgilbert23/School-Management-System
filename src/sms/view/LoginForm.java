@@ -5,7 +5,6 @@
  */
 package sms.view;
 import javax.swing.JOptionPane;
-import sms.gui.MainFrameDesign;
 /**
  *
  * @author USER
@@ -146,8 +145,8 @@ if(username.equals("admin") && password.equals("1234")){
     
     JOptionPane.showMessageDialog(this,"Login Successful");
 
-    MainFrameDesign main = new MainFrameDesign();
-    main.setVisible(true);
+    sms.gui.MainFrameDesign main = new sms.gui.MainFrameDesign();
+       main.setVisible(true);
 
     this.dispose();
 

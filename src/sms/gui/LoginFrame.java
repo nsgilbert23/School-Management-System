@@ -108,7 +108,7 @@ public class LoginFrame extends JFrame {
 
                 @Override
                 protected void done() {
-                    new MainFrame().setVisible(true);
+                    new MainFrameDesign().setVisible(true);
                     dispose();
                 }
             };

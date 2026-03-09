@@ -9,7 +9,7 @@ import javax.swing.JOptionPane;
 public class StudentDAO {
 
     // JDBC connection parameters
-    private static final String URL = "jdbc:mysql://localhost:3306/sms"; // replace with your DB
+    private static final String URL = "jdbc:mysql://localhost:3307/sms"; // replace with your DB
     private static final String USER = "root"; // replace with your DB user
     private static final String PASS = "";     // replace with your DB password
 
