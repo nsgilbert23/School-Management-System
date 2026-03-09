@@ -4,33 +4,40 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import sms.dao.DatabaseConnection;
 
 public class LoginFrame extends JFrame {
-    private JTextField txtUsername;
+
+    private JTextField txtEmail;
     private JPasswordField txtPassword;
     private JCheckBox chkRemember;
     private JLabel lblMessage;
     private JProgressBar progressBar;
 
     public LoginFrame() {
+
         setTitle("Student Management System - Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 300);
+        getContentPane().setBackground(new Color(126, 174, 86));
         setLocationRelativeTo(null);
         setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
 
-        // Username
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5,5,5,5);
+
+        // Email
         gbc.gridx = 0; gbc.gridy = 0;
-        add(new JLabel("Username:"), gbc);
+        add(new JLabel("Email:"), gbc);
+
         gbc.gridx = 1;
-        txtUsername = new JTextField(15);
-        add(txtUsername, gbc);
+        txtEmail = new JTextField(15);
+        add(txtEmail, gbc);
 
         // Password
         gbc.gridx = 0; gbc.gridy = 1;
         add(new JLabel("Password:"), gbc);
+
         gbc.gridx = 1;
         txtPassword = new JPasswordField(15);
         add(txtPassword, gbc);
@@ -40,82 +47,106 @@ public class LoginFrame extends JFrame {
         chkRemember = new JCheckBox("Remember Me");
         add(chkRemember, gbc);
 
-        // Buttons panel
+        // Buttons
         JPanel buttonPanel = new JPanel();
         JButton btnLogin = new JButton("Login");
         JButton btnReset = new JButton("Reset");
+
         buttonPanel.add(btnLogin);
         buttonPanel.add(btnReset);
+
         gbc.gridx = 1; gbc.gridy = 3;
         add(buttonPanel, gbc);
 
-        // Message label
+        // Message
         gbc.gridx = 1; gbc.gridy = 4;
         lblMessage = new JLabel(" ");
         lblMessage.setForeground(Color.RED);
         add(lblMessage, gbc);
 
         // Progress bar
-        progressBar = new JProgressBar(0, 100);
+        progressBar = new JProgressBar(0,100);
         progressBar.setStringPainted(true);
         progressBar.setVisible(false);
+
         gbc.gridx = 1; gbc.gridy = 5;
         add(progressBar, gbc);
 
-        // Button actions
+        // Login button action
         btnLogin.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 performLogin();
             }
         });
 
+        // Reset button
         btnReset.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
-                txtUsername.setText("");
+                txtEmail.setText("");
                 txtPassword.setText("");
                 chkRemember.setSelected(false);
                 lblMessage.setText("");
+                progressBar.setValue(0);
+                progressBar.setVisible(false);
             }
         });
+
     }
 
     private void performLogin() {
-        String username = txtUsername.getText().trim();
+
+        String email = txtEmail.getText().trim();
         String password = new String(txtPassword.getPassword());
 
-        if (username.equals("admin") && password.equals("admin")) {
+        boolean valid = DatabaseConnection.login(email, password);
+
+        if(valid){
+
             lblMessage.setForeground(Color.GREEN);
             lblMessage.setText("Login successful! Loading...");
             progressBar.setVisible(true);
 
-            SwingWorker<Void, Integer> worker = new SwingWorker<Void, Integer>() {
+            SwingWorker<Void,Integer> worker = new SwingWorker<Void,Integer>(){
+
                 @Override
                 protected Void doInBackground() throws Exception {
-                    for (int i = 0; i <= 100; i++) {
+
+                    for(int i=0;i<=100;i++){
                         Thread.sleep(20);
                         publish(i);
                     }
+
                     return null;
                 }
 
                 @Override
-                protected void process(java.util.List<Integer> chunks) {
-                    int value = chunks.get(chunks.size() - 1);
+                protected void process(java.util.List<Integer> chunks){
+
+                    int value = chunks.get(chunks.size()-1);
                     progressBar.setValue(value);
+
                 }
 
                 @Override
-                protected void done() {
+                protected void done(){
+
                     new MainFrameDesign().setVisible(true);
                     dispose();
+
                 }
+
             };
+
             worker.execute();
-        } else {
-            lblMessage.setText("Invalid username or password");
+
+        }else{
+
+            lblMessage.setForeground(Color.RED);
+            lblMessage.setText("Invalid email or password");
             progressBar.setVisible(false);
+
         }
+
     }
+
 }

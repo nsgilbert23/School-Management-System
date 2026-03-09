@@ -2,6 +2,8 @@ package sms.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
@@ -9,14 +11,16 @@ public class DatabaseConnection {
     private static final String URL = "jdbc:mysql://localhost:3307/sms?useSSL=false&serverTimezone=UTC";    private static final String USER = "root";
     private static final String PASSWORD = "";
 
-    public static Connection getConnection() throws SQLException {
-
+    static {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             System.out.println("MySQL Driver loaded successfully");
         } catch (ClassNotFoundException e) {
-            System.out.println("MySQL Driver not found");
+            System.out.println("MySQL Driver not found: " + e.getMessage());
         }
+    }
+
+    public static Connection getConnection() throws SQLException {
 
         Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
 
@@ -25,5 +29,30 @@ public class DatabaseConnection {
         }
 
         return conn;
+    }
+
+    // Login verification method
+    public static boolean login(String email, String password) {
+
+        String sql = "SELECT * FROM users WHERE email=? AND password=?";
+        boolean success = false;
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, email);
+            ps.setString(2, password);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                success = true;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Login error: " + e.getMessage());
+        }
+
+        return success;
     }
 }
