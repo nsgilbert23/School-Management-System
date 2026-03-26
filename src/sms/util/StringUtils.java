@@ -1,5 +1,6 @@
 package sms.util;
 
+// Utility class for string manipulation - title case, trim, and validation helpers
 public class StringUtils {
 
     public static String toTitleCase(String input) {
