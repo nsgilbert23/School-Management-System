@@ -1,5 +1,5 @@
 package sms.model;
-// Student extends Person abstract class and implements DatabaseOperations - BelyseU
+// Student model - extends Person and implements DatabaseOperations interface
 import sms.dao.DatabaseConnection;
 import java.sql.*;
 
