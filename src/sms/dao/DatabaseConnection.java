@@ -1,5 +1,5 @@
 package sms.dao;
-// Database connection configured for port 3307 - BelyseU
+// Database connection configured for port 3307 - BelyseU and nsgilbert23
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
