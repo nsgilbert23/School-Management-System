@@ -1,5 +1,5 @@
 package sms.gui;
-// Entry point - launches LoginForm first then MainFrameDesign - BelyseU
+// Entry point - launches LoginForm first then MainFrameDesign - BelyseU and nsgilbert23
 import sms.view.LoginForm;
 
 public class MainApp {
