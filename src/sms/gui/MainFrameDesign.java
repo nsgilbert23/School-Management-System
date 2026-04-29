@@ -391,7 +391,7 @@ private boolean validateInputs() {
 
         JOptionPane.showMessageDialog(
                 this,
-                "Student Management System\nVersion 1.0\nJava Swing Project",
+                "Done by:\nNSENGIMANA Gilbert\nUMURERWA Belyse\nStudent Management System\nVersion 1.0\nJava Swing Project",
                 "About",
                 JOptionPane.INFORMATION_MESSAGE
         );

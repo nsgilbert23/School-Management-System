@@ -4,8 +4,6 @@ import java.util.List;
 
 public interface DatabaseOperations {
 
-    void add();
-
     void update();
 
     void delete();
