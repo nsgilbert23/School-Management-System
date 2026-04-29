@@ -1,5 +1,5 @@
 package sms.model;
-
+// Abstract base class representing a person with name and email attributes
 public abstract class Person {
 
     protected String firstName;

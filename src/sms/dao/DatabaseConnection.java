@@ -1,5 +1,5 @@
 package sms.dao;
-
+// Database connection configured for port 3307 - BelyseU and nsgilbert23
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -8,8 +8,7 @@ import java.sql.SQLException;
 
 public class DatabaseConnection {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/sms?useSSL=false&serverTimezone=UTC";
-    private static final String USER = "root";
+    private static final String URL = "jdbc:mysql://localhost:3307/sms?useSSL=false&serverTimezone=UTC";    private static final String USER = "root";
     private static final String PASSWORD = "";
 
     static {
